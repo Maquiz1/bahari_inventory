@@ -13,9 +13,11 @@ from .reference_data import (
     Unit,
     Warehouse,
 )
+from .item import Item
 
 __all__ = [
     "Brand",
+    "Item",
     "ItemCategory",
     "Manufacturer",
     "Store",

@@ -28,8 +28,8 @@ class ActiveManager(models.Manager.from_queryset(SoftDeleteQuerySet)):
         return super().get_queryset().filter(deleted_at__isnull=True)
 
 
-class NamedReferenceModel(models.Model):
-    """Base for named reference records with audit and soft-delete support."""
+class AuditedSoftDeleteModel(models.Model):
+    """Base for records with UUID identifiers, audit fields, and soft delete."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
@@ -39,6 +39,30 @@ class NamedReferenceModel(models.Model):
 
     objects = ActiveManager()
     all_objects = models.Manager.from_queryset(SoftDeleteQuerySet)()
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = timezone.now()
+        self.save(update_fields=["deleted_at", "updated_at"])
+
+    def hard_delete(self, using=None, keep_parents=False):
+        return super().delete(using=using, keep_parents=keep_parents)
+
+    def restore(self):
+        self.deleted_at = None
+        self.save(update_fields=["deleted_at", "updated_at"])
+
+
+class NamedReferenceModel(AuditedSoftDeleteModel):
+    """Base for named reference records with validation and indexes."""
+
+    name = models.CharField(max_length=255)
 
     class Meta:
         abstract = True
@@ -61,21 +85,6 @@ class NamedReferenceModel(models.Model):
             self.name = self.name.strip()
         if not self.name:
             raise ValidationError({"name": "Name cannot be blank or whitespace only."})
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
-
-    def delete(self, using=None, keep_parents=False):
-        self.deleted_at = timezone.now()
-        self.save(update_fields=["deleted_at", "updated_at"])
-
-    def hard_delete(self, using=None, keep_parents=False):
-        return super().delete(using=using, keep_parents=keep_parents)
-
-    def restore(self):
-        self.deleted_at = None
-        self.save(update_fields=["deleted_at", "updated_at"])
 
     def __str__(self):
         return self.name
