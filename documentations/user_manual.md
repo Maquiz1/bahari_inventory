@@ -2,8 +2,8 @@
 
 ## Who this is for
 
-This guide is for administrators who maintain the reference lists used by
-Bahari Inventory. You need a Django admin account with permission to view and
+This guide is for administrators who maintain Bahari Inventory reference data
+and catalog items. You need a Django admin account with permission to view and
 change the relevant Inventory records.
 
 ## Available reference lists
@@ -17,8 +17,26 @@ Under **Inventory** in Django admin, you can manage:
 - Suppliers
 - Warehouses
 - Stores
+- Items
 
 Each list works in the same way.
+
+## Add or edit an Item
+
+1. Open **Inventory → Items**, then select **Add Item** or an existing item.
+2. Enter a unique item code and a name.
+3. Select an Item Category and Unit. Brand and Manufacturer are optional.
+4. Optionally enter barcode, generic name, description, tracking settings, and
+   minimum, maximum, or reorder stock-policy thresholds.
+5. Select **Save**.
+
+Codes are unique among active Items without regard to capitalization. A
+non-empty barcode can be used by only one active Item. If a maximum threshold
+is entered, it cannot be lower than the minimum threshold or reorder level.
+
+Items define catalog information only. Do not look for or enter stock quantity
+on an Item; stock quantity belongs to a future stock-balance or transaction
+screen.
 
 ## Add a record
 
@@ -43,8 +61,10 @@ cannot be edited.
 
 ## Find a record
 
-Use the search box at the top of the list to search by name. Lists are ordered
-alphabetically by name.
+Use the search box at the top of the list to search by name. On the Items list,
+you can search code, barcode, name, or generic name and filter by active
+status, category, brand, or manufacturer. Lists are ordered alphabetically by
+name.
 
 ## Remove a record
 
@@ -62,5 +82,7 @@ in this release.
 | --- | --- |
 | Name cannot be blank | Enter a non-empty name. |
 | A duplicate-name validation error | Use the existing active record or use a unique name. |
+| Duplicate Item code or barcode | Use a unique code or barcode, or open the existing Item. |
+| Item stock-policy validation error | Ensure maximum stock is not less than minimum stock or reorder level. |
 | Record no longer appears after deletion | This is expected soft-delete behavior. Contact a maintainer if restoration is needed. |
 | You cannot see an Inventory list | Ask an administrator to grant you the appropriate Django permission. |

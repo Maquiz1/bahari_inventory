@@ -3,13 +3,13 @@
 ## 1. Purpose
 
 Bahari Inventory is a Django inventory-management application. This release
-establishes the reference data that future stock, purchasing, and sales
-features will use. It deliberately does not introduce item, quantity,
-transaction, API, or reporting functionality.
+establishes reference data and the Item catalog that future stock, purchasing,
+and sales features will use. It deliberately does not introduce stock
+quantity, transactions, APIs, or reporting functionality.
 
 ## 2. Scope
 
-The system shall manage the following reference-data records:
+The system shall manage the following reference-data records and catalog item:
 
 | Record | Business purpose |
 | --- | --- |
@@ -20,6 +20,7 @@ The system shall manage the following reference-data records:
 | Supplier | Identifies the organization that supplies an item. |
 | Warehouse | Identifies a location where inventory is held. |
 | Store | Identifies a location from which inventory is sold or issued. |
+| Item | Defines a catalog product without recording stock quantity. |
 
 ## 3. Functional requirements
 
@@ -45,6 +46,24 @@ The system shall manage the following reference-data records:
 - **FR-08:** The data layer shall support restoring a soft-deleted record when
   a future authorized workflow requires it.
 
+### 3.3 Item catalog management
+
+- **FR-09:** An authorized administrator shall be able to create, view, edit,
+  search, and soft-delete Items through Django admin.
+- **FR-10:** An Item shall have a required `code`, `name`, `category`, and
+  `unit`; `barcode`, `generic_name`, `brand`, `manufacturer`, and
+  `description` are optional.
+- **FR-11:** An Item shall provide `track_batch`, `track_expiry`, and
+  `track_serial` options, all disabled by default.
+- **FR-12:** An Item shall provide optional non-negative `minimum_stock`,
+  `maximum_stock`, and `reorder_level` policy thresholds. Where maximum stock
+  is supplied, it cannot be below minimum stock or the reorder level.
+- **FR-13:** Active Item codes shall be unique without regard to letter case.
+  Non-empty active barcodes shall also be unique.
+- **FR-14:** An Item shall provide an `is_active` status and must not contain a
+  stock quantity field. Quantity is owned by a future stock-balance or
+  transaction capability.
+
 ## 4. Non-functional requirements
 
 - **NFR-01:** Normal model queries must return active records only.
@@ -58,7 +77,7 @@ The system shall manage the following reference-data records:
 
 ## 5. Data requirements
 
-All seven record types share the following fields:
+The seven reference-data record types share the following fields:
 
 | Field | Type | Rules |
 | --- | --- | --- |
@@ -68,19 +87,30 @@ All seven record types share the following fields:
 | `updated_at` | timestamp | Updated on every save. |
 | `deleted_at` | nullable timestamp | Set by soft delete; null for an active record. |
 
+An Item has the same `id`, audit, and soft-delete fields plus the following
+catalog fields:
+
+| Field | Rules |
+| --- | --- |
+| `code`, `name` | Required; trimmed; active codes are case-insensitively unique. |
+| `barcode`, `generic_name`, `description` | Optional descriptive fields. |
+| `category`, `unit` | Required links to reference data. |
+| `brand`, `manufacturer` | Optional links to reference data. |
+| `track_batch`, `track_expiry`, `track_serial`, `is_active` | Boolean controls. |
+| `minimum_stock`, `maximum_stock`, `reorder_level` | Optional non-negative policy thresholds; not inventory quantity. |
+
 ## 6. Assumptions and exclusions
 
 - Django authentication and authorization are supplied by the host project.
 - The host project adds `inventory` to `INSTALLED_APPS` and applies its
   migrations.
-- Relationships to stock items, addresses, contacts, quantities, procurement,
-  and sales are outside this release.
+- Stock balances, stock movements, addresses, contacts, procurement, and sales
+  are outside this release. In particular, Item does not store quantity.
 - No API endpoints or custom user interface are included in this release.
 
 ## 7. Acceptance criteria
 
-The release is accepted when all seven record types are migrated, registered
-in Django admin, validate names correctly, preserve audit timestamps, use UUID
-primary keys, soft-delete rather than physically delete through the normal
-model interface, and expose the indexes and active-name uniqueness constraint
-defined above.
+The release is accepted when all seven reference-data records and Item are
+migrated and registered in Django admin; validation, audit timestamps, UUID
+primary keys, soft deletion, indexes, and the defined uniqueness constraints
+work; and Item contains no stock quantity field.

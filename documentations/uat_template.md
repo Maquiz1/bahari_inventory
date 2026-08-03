@@ -22,8 +22,9 @@
 
 ## Test cases
 
-Use each applicable record type: Item category, Unit, Brand, Manufacturer,
-Supplier, Warehouse, and Store.
+Use each applicable reference-data record type: Item category, Unit, Brand,
+Manufacturer, Supplier, Warehouse, and Store. Run the Item cases after
+creating an Item Category and Unit.
 
 | ID | Scenario | Steps | Expected result | Actual result | Status | Evidence / notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +39,12 @@ Supplier, Warehouse, and Store.
 | UAT-09 | Verify audit fields | Open a saved record. | UUID, created timestamp, and updated timestamp are visible and read-only. | | | |
 | UAT-10 | Soft delete | Delete a test record and return to the list. | Record no longer appears in the normal list. | | | |
 | UAT-11 | Reuse deleted name | Create a new record using the deleted record's name. | New active record saves successfully. | | | |
+| UAT-12 | Create Item | Add an Item with code, name, category, and unit. | Item saves and appears in the Item list. | | | |
+| UAT-13 | Item identifiers | Add surrounding spaces to a unique Item code and barcode. | Identifiers are trimmed; duplicate active code or barcode is rejected. | | | |
+| UAT-14 | Item tracking | Enable batch, expiry, and serial tracking on an Item. | Selected tracking settings save and display correctly. | | | |
+| UAT-15 | Stock-policy validation | Enter a maximum stock lower than minimum stock or reorder level. | Item save is rejected with a validation error. | | | |
+| UAT-16 | No Item quantity | Open the Item add and edit screens. | No stock quantity field is displayed. | | | |
+| UAT-17 | Item search and filters | Search by Item code, barcode, name, and generic name; use filters. | Matching Items and expected filtered results are displayed. | | | |
 
 ## Defects and observations
 
