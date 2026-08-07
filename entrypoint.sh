@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 source /app/.env.docker
 echo "Waiting for database..."
 python -c "
