@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Production Deployment Script for Bahari Inventory Application
-# Path on Server: /opt/bahari_inventory/deploy.sh (you may copy to desired location)
+# Path on Server: /opt/inventory/deploy.sh (you may copy to desired location)
 # ==============================================================================
 set -e
 
 # -------------------------------------------------------------------------
 # 1️⃣  Define paths
 # -------------------------------------------------------------------------
-PROJECT_DIR="/opt/bahari_inventory"
+PROJECT_DIR="/opt/inventory"
 BACKEND_DIR="${PROJECT_DIR}"
 ENV_FILE="${BACKEND_DIR}/.env.docker"
 
