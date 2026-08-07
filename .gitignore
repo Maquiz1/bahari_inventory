@@ -1,0 +1,16 @@
+.venv
+venv-inventory
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.sqlite3
+.env
+.env.docker
+staticfiles/
+media/
+.DS_Store
+.idea/
+.vscode/

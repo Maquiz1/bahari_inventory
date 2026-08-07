@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: bahari_inventory_db
+    volumes:
+      - postgres_inventory_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=inventory_db
+      - POSTGRES_USER=inventory_user
+      - POSTGRES_PASSWORD=inventory_secure_pass
+    restart: always
+
+  web:
+    build: .
+    container_name: bahari_inventory_web
+    command: /app/entrypoint.sh
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    ports:
+      - "${WEB_PORT:-8085}:8000"
+    env_file:
+      - .env.docker
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  postgres_inventory_data:
+  static_volume:
