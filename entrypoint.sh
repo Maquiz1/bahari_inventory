@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -e
-
+source /app/.env.docker
 echo "Waiting for database..."
 python -c "
 import time, socket, os
